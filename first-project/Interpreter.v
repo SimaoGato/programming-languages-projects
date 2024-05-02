@@ -52,7 +52,14 @@ Fixpoint ceval_step (st : state) (c : com) (continuation: list (state * com)) (i
                                         else Success (st, continuation)
            | <{ c1 !! c2 }> => ceval_step st c1 ((st,c2)::continuation) n
            | <{ b -> c }> => if beval st b then ceval_step st c continuation n
-                             else Success (st, continuation)
+                             else match continuation with
+                                  | [] => Fail
+                                  | (st', c')::continuation' => match ceval_step st' c' continuation' n with
+                                                               | Fail => Fail
+                                                               | OutOfGas => OutOfGas
+                                                               | Success (st'', continuation'') => ceval_step st'' c continuation'' n
+                                                               end
+                                  end
            end
   end.
 
