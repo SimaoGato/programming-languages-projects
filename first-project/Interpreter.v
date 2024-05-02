@@ -32,8 +32,28 @@ Notation "'LETOPT' x <== e1 'IN' e2"
 Fixpoint ceval_step (st : state) (c : com) (continuation: list (state * com)) (i : nat)
                     : interpreter_result :=
   match i with
-  | (* TODO *)
-  | (* TODO *)
+  | 0 => OutOfGas
+  | S n => match c with
+           | <{ skip }> =>  Success (st, continuation)
+           | <{ X := a  }> => Success (X !-> (aeval st a); st, continuation)
+           | <{ c1; c2 }> => match (ceval_step st c1 continuation n) with
+                             | Fail => Fail
+                             | OutOfGas => OutOfGas
+                             | Success (st', continuation') => ceval_step st' c2 continuation' n
+                             end
+                              
+           | <{ if b then c1 else c2 end }> => if beval st b then ceval_step st c1 continuation n
+                                               else ceval_step st c2 continuation n
+           | <{ while b do c1 end }> => if beval st b then match (ceval_step st c1 continuation n) with
+                                                           | Fail => Fail
+                                                           | OutOfGas => OutOfGas
+                                                           | Success (st', continuation') => ceval_step st' c continuation' n
+                                                           end
+                                        else Success (st, continuation)
+           | <{ c1 !! c2 }> => ceval_step st c1 ((st,c2)::continuation) n
+           | <{ b -> c }> => if beval st b then ceval_step st c continuation n
+                             else Success (st, continuation)
+           end
   end.
 
 
