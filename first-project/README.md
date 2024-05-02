@@ -15,8 +15,8 @@ TODO: Identify what you have done and, in particular, **identify any missing fea
 | New notation                                           |     0,5     |     x     |
 | Examples `p1` and `p2`                                 |     0,5     |     x     |
 | **Task 2 (Interpreter.v)**                             |             |           |
-| Implementation of step-indexed evaluator               |      3      |           |
-| Proof of `p1_equals_p2`                                |      1      |           |
+| Implementation of step-indexed evaluator               |      3      |     x     |
+| Proof of `p1_equals_p2`                                |      1      |     x     |
 | Proof of `ceval_step_more`                             |     2,5     |           |
 | **Task 3 (RelationalEvaluation.v)**                    |             |           |
 | Definition of `ceval`                                  |      3      |           |
