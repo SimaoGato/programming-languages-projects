@@ -34,6 +34,30 @@ Inductive ceval : com -> state -> list (state * com) ->
           result -> state -> list (state * com) -> Prop :=
 | E_Skip : forall st q,
  st / q =[ skip ]=> st / q / Success
+
+| E_Asgn : forall st q X a n,
+ aeval st a = n ->
+ st / q =[ X := a ]=> (X !-> n ; st) / q / Success 
+
+| E_Seq : forall c1 c2 st1 q1 st2 q2 st3 q3 r1 r2,
+ st1 / q1 =[ c1 ]=> st2 / q2 / r1 ->
+ st2 / q2 =[ c2 ]=> st3 / q3 / r2 ->
+ st1 / q1 =[ c1 ; c2 ]=> st3 / (q1 ++ (st2, c2) :: q2) / r2
+
+| E_IfTrue : forall st q b c1 c2 st' q' r,
+  beval st b = true ->
+  st / q =[ c1 ]=> st' / q' / r ->
+  st / q =[ if b then c1 else c2 end ]=> st' / (q ++ (st, c2) :: q') / r
+
+| E_IfFalse : forall st q b c1 c2 st' q' r,
+  beval st b = false ->
+  st / q =[ c2 ]=> st' / q' / r ->
+  st / q =[ if b then c1 else c2 end ]=> st' / (q ++ (st, c1) :: q') / r
+
+| E_WhileFalse : forall b st q c,
+  beval st b = false ->
+  st / q =[ while b do c end ]=> st / q / Success
+
 (* TODO. Hint: follow the same structure as shown in the chapter Imp *)
 where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
 
