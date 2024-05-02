@@ -44,22 +44,20 @@ Fixpoint ceval_step (st : state) (c : com) (continuation: list (state * com)) (i
                               
            | <{ if b then c1 else c2 end }> => if beval st b then ceval_step st c1 continuation n
                                                else ceval_step st c2 continuation n
-           | <{ while b do c1 end }> => if beval st b then match (ceval_step st c1 continuation n) with
-                                                           | Fail => Fail
-                                                           | OutOfGas => OutOfGas
-                                                           | Success (st', continuation') => ceval_step st' c continuation' n
-                                                           end
+           | <{ while b do c1 end }> => if beval st b
+                                        then match (ceval_step st c1 continuation n) with
+                                             | Fail => Fail
+                                             | OutOfGas => OutOfGas
+                                             | Success (st', continuation') => ceval_step st' c continuation' n
+                                             end
                                         else Success (st, continuation)
            | <{ c1 !! c2 }> => ceval_step st c1 ((st,c2)::continuation) n
-           | <{ b -> c }> => if beval st b then ceval_step st c continuation n
+           | <{ b -> c1 }> => if beval st b
+                             then ceval_step st c1 continuation n
                              else match continuation with
                                   | [] => Fail
-                                  | (st', c')::continuation' => match ceval_step st' c' continuation' n with
-                                                               | Fail => Fail
-                                                               | OutOfGas => OutOfGas
-                                                               | Success (st'', continuation'') => ceval_step st'' c continuation'' n
-                                                               end
-                                  end
+                                  | (state', c2)::cont' => ceval_step state' <{ c2;c }> cont' n
+                              end
            end
   end.
 
@@ -132,7 +130,6 @@ Example test_11:
 Proof. auto. Qed.
 
 
-
 (**
   2.2. TODO: Prove p1_equals_p2. Recall that p1 and p2 are defined in Imp.v
 *)
@@ -141,9 +138,21 @@ Theorem p1_equals_p2: forall st cont,
   (exists i0,
     (forall i1, i1 >= i0 -> ceval_step st p1 cont i1 =  ceval_step st p2 cont i1)).
 Proof.
-  (* TODO *)
+  intros st cont.
+  exists 5.
+  intros i1 H.
+  destruct i1.
+  - simpl. reflexivity.
+  - destruct i1.
+    --  lia.
+    -- destruct i1.
+       --- lia.
+       --- destruct i1.
+           ---- lia.
+           ---- destruct i1.
+               ----- lia.
+               ----- simpl. reflexivity.
 Qed.
-
 
 (**
   2.3. TODO: Prove ceval_step_more.
