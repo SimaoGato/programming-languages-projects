@@ -14,14 +14,14 @@ Inductive interpreter_result : Type :=
     bit of auxiliary notation to hide the plumbing involved in
     repeatedly matching against optional states. *)
 
-(*
-Notation "'LETOPT' x <== e1 'IN' e2"
+
+Notation "'LETOPT' '(' x ',' y ')' <== e1 'IN' e2"
   := (match e1 with
-          | Some x => e2
-          | None => None
+          | Success (x, y) => e2
+          | Fail => Fail
+          | OutOfGas => OutOfGas
        end)
 (right associativity, at level 60).
-*)
 
 (**
   2.1. TODO: Implement ceval_step as specified. To improve readability,
@@ -34,30 +34,24 @@ Fixpoint ceval_step (st : state) (c : com) (continuation: list (state * com)) (i
   match i with
   | 0 => OutOfGas
   | S n => match c with
-           | <{ skip }> =>  Success (st, continuation)
-           | <{ X := a  }> => Success (X !-> (aeval st a); st, continuation)
-           | <{ c1; c2 }> => match (ceval_step st c1 continuation n) with
-                             | Fail => Fail
-                             | OutOfGas => OutOfGas
-                             | Success (st', continuation') => ceval_step st' c2 continuation' n
-                             end
-                              
-           | <{ if b then c1 else c2 end }> => if beval st b then ceval_step st c1 continuation n
+           | <{ skip }> => Success (st, continuation)
+           | <{ X := a }> => Success (X !-> (aeval st a); st, continuation)
+           | <{ c1; c2 }> => LETOPT (st', continuation') <== ceval_step st c1 continuation n
+                             IN ceval_step st' c2 continuation' n
+           | <{ if b then c1 else c2 end }> => if beval st b
+                                               then ceval_step st c1 continuation n
                                                else ceval_step st c2 continuation n
            | <{ while b do c1 end }> => if beval st b
-                                        then match (ceval_step st c1 continuation n) with
-                                             | Fail => Fail
-                                             | OutOfGas => OutOfGas
-                                             | Success (st', continuation') => ceval_step st' c continuation' n
-                                             end
+                                        then LETOPT (st', continuation') <== ceval_step st c1 continuation n
+                                             IN ceval_step st' c continuation' n
                                         else Success (st, continuation)
            | <{ c1 !! c2 }> => ceval_step st c1 ((st,c2)::continuation) n
            | <{ b -> c1 }> => if beval st b
-                             then ceval_step st c1 continuation n
-                             else match continuation with
-                                  | [] => Fail
-                                  | (state', c2)::cont' => ceval_step state' <{ c2;c }> cont' n
-                              end
+                              then ceval_step st c1 continuation n
+                              else match continuation with
+                                   | [] => Fail
+                                   | (state', c2)::cont' => ceval_step state' <{ c2;c }> cont' n
+                                   end
            end
   end.
 
