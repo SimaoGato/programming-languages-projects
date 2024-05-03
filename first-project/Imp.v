@@ -165,7 +165,7 @@ Proof. reflexivity. Qed.
     commands: *)
 
 (** 
-  1.1. TODO: Extend the datatype with the two new constructs as specified.
+  1.1. DONE: Extend the datatype with the two new constructs as specified.
 *)
 Inductive com : Type :=
   | CSkip
@@ -181,7 +181,7 @@ Inductive com : Type :=
 
 
 (**
-  1.2. TODO: Define notations for the new constructs as required
+  1.2. DONE: Define notations for the new constructs as required
 *)
 Notation "'skip'"  :=
          CSkip (in custom com at level 0) : com_scope.
@@ -207,7 +207,7 @@ Notation "'while' x 'do' y 'end'" :=
             (in custom com at level 89, x at level 99, y at level 99) : com_scope.
 
 (**
-  1.3. TODO: Define p1 and p2 as, respectively, the programs:
+  1.3. DONE: Define p1 and p2 as, respectively, the programs:
 
                 (X := 1  !!  X := 2);  X=2 -> skip
              and

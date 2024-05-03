@@ -24,7 +24,7 @@ Notation "'LETOPT' '(' x ',' y ')' <== e1 'IN' e2"
 (right associativity, at level 60).
 
 (**
-  2.1. TODO: Implement ceval_step as specified. To improve readability,
+  2.1. DONE: Implement ceval_step as specified. To improve readability,
              you are strongly encouraged to define auxiliary notation.
              See the notation LETOPT in the ImpCEval chapter.
 *)
@@ -125,7 +125,12 @@ Proof. auto. Qed.
 
 
 (**
-  2.2. TODO: Prove p1_equals_p2. Recall that p1 and p2 are defined in Imp.v
+  2.2. DONE: Prove p1_equals_p2. Recall that p1 and p2 are defined in Imp.v
+
+  Property Explanation:
+  - There is an i0 (number of steps) such that for all i1 >= i0, the result of ceval_step
+    for p1 and p2 is the same. Basically, the two programs are equivalent with a number of steps
+    greater than or equal to i0.
 *)
 
 Theorem p1_equals_p2: forall st cont,
@@ -149,7 +154,13 @@ Proof.
 Qed.
 
 (**
-  2.3. TODO: Prove ceval_step_more.
+  2.3. DONE: Prove ceval_step_more.
+
+  Property Explanation:
+  - If the result of ceval_step for a program c with i1 steps is Success (st', cont'),
+    then for all i2 >= i1, the result of ceval_step for the same program c with i2 steps
+    is also Success (st', cont'). Basically, if the program terminates in i1 steps, it will
+    also terminate in i2 steps, for all i2 >= i1.
 *)
 
 Theorem ceval_step_more: forall i1 i2 st st' c cont cont',
@@ -157,7 +168,6 @@ Theorem ceval_step_more: forall i1 i2 st st' c cont cont',
   ceval_step st c cont i1 = Success (st', cont') ->
   ceval_step st c cont i2 = Success (st', cont').
 Proof.
-  (* TODO: *)
   induction i1 as [| i1' ]; intros i2 st st' c cont cont' Hle Hceval.
   - (* i1 = 0 *)
     simpl in Hceval. discriminate Hceval.
