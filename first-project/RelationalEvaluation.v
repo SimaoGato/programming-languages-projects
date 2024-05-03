@@ -31,32 +31,32 @@ Reserved Notation "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r"
 *)
 
 Inductive ceval : com -> state -> list (state * com) -> 
-          result -> state -> list (state * com) -> Prop :=
+                  result -> state -> list (state * com) -> Prop :=
 | E_Skip : forall st q,
- st / q =[ skip ]=> st / q / Success
-
+    st / q =[ skip ]=> st / q / Success
 | E_Asgn : forall st q X a n,
- aeval st a = n ->
- st / q =[ X := a ]=> (X !-> n ; st) / q / Success 
-
+    aeval st a = n ->
+    st / q =[ X := a ]=> (X !-> n ; st) / q / Success 
 | E_Seq : forall c1 c2 st1 q1 st2 q2 st3 q3 r1 r2,
- st1 / q1 =[ c1 ]=> st2 / q2 / r1 ->
- st2 / q2 =[ c2 ]=> st3 / q3 / r2 ->
- st1 / q1 =[ c1 ; c2 ]=> st3 / (q1 ++ (st2, c2) :: q2) / r2
-
-| E_IfTrue : forall st q b c1 c2 st' q' r,
-  beval st b = true ->
-  st / q =[ c1 ]=> st' / q' / r ->
-  st / q =[ if b then c1 else c2 end ]=> st' / (q ++ (st, c2) :: q') / r
-
-| E_IfFalse : forall st q b c1 c2 st' q' r,
-  beval st b = false ->
-  st / q =[ c2 ]=> st' / q' / r ->
-  st / q =[ if b then c1 else c2 end ]=> st' / (q ++ (st, c1) :: q') / r
-
+    st1 / q1 =[ c1 ]=> st2 / q2 / r1 ->
+    st2 / q2 =[ c2 ]=> st3 / q3 / r2 ->
+    st1 / q1 =[ c1 ; c2 ]=> st3 / q3 / r2
+| E_IfTrue : forall st q st' q' b c1 c2 r,
+    beval st b = true ->
+    st / q =[ c1 ]=> st' / q' / r ->
+    st / q =[ if b then c1 else c2 end ]=> st' / q' / r
+| E_IfFalse : forall st q st' q' b c1 c2 r,
+    beval st b = false ->
+    st / q =[ c2 ]=> st' / q' / r ->
+    st / q =[ if b then c1 else c2 end ]=> st' / q' / r
 | E_WhileFalse : forall b st q c,
-  beval st b = false ->
-  st / q =[ while b do c end ]=> st / q / Success
+    beval st b = false ->
+    st / q =[ while b do c end ]=> st / q / Success
+| E_WhileTrue : forall c st1 q1 st2 q2 st3 q3 r1 r2 b,
+    beval st1 b = true ->
+    st1 / q1 =[ c ]=> st2 / q2 / r1 ->
+    st2 / q2 =[ while b do c end ]=> st3 / q3 / r2 ->
+    st1 / q1 =[ while b do c end ]=> st3 / q3 / r2
 
 (* TODO. Hint: follow the same structure as shown in the chapter Imp *)
 where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
@@ -69,25 +69,31 @@ where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
 *)
 
 Example ceval_example_if:
-empty_st / [] =[
-X := 2;
-if (X <= 1)
-  then Y := 3
-  else Z := 4
-end
-]=> (Z !-> 4 ; X !-> 2) / [] / Success.
+  empty_st / [] =[
+    X := 2;
+    if (X <= 1)
+      then Y := 3
+      else Z := 4
+    end
+  ]=> (Z !-> 4 ; X !-> 2) / [] / Success.
 Proof.
-  (* TODO *)
+  apply E_Seq with (X !-> 2) [] Success.
+  - apply E_Asgn. reflexivity.
+  - apply E_IfFalse.
+    + reflexivity. 
+    + apply E_Asgn. reflexivity.
 Qed.
 
 
 Example ceval_example_guard1:
-empty_st / [] =[
-   X := 2;
-   (X = 1) -> X:=3
-]=> (empty_st) / [] / Fail.
+  empty_st / [] =[
+    X := 2;
+    (X = 1) -> X:=3
+  ]=> (empty_st) / [] / Fail.
 Proof.
-  (* TODO *)
+  apply E_Seq with (X !-> 2) [] Success.
+  - apply E_Asgn. reflexivity.
+  -
 Qed. 
 
 Example ceval_example_guard2:
