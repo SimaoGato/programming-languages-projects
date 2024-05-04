@@ -172,32 +172,42 @@ Lemma cequiv_ex1:
 <{ X := 2 }>.
 Proof.
   (* TODO *)
-Qed.
+Admitted.
 
 Lemma cequiv_ex2:
 <{ (X := 1 !! X := 2); X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
   (* TODO *)
-Qed.
+Admitted.
 
 
 Lemma choice_idempotent: forall c,
 <{ c !! c }> == <{ c }>.
 Proof.
-  (* TODO *)
+  intros c; split; unfold cequiv_imp; intros.
+  - inversion H; subst.
+    -- exists q'. apply H7.
+    -- exists q'. apply H7.
+  - exists ((st2,c)::q2). apply E_Nondet1. apply H.
 Qed.
 
 Lemma choice_comm: forall c1 c2,
 <{ c1 !! c2 }> == <{ c2 !! c1 }>.
 Proof.
-  (* TODO *)
+  intros c1 c2; split; unfold cequiv_imp; intros.
+  - inversion H; subst.
+    -- exists ((st2,c2)::q'). apply E_Nondet2. apply H7.
+    -- exists ((st2,c1)::q'). apply E_Nondet1. apply H7.
+  - inversion H; subst.
+    -- exists ((st2,c1)::q'). apply E_Nondet2. apply H7.
+    -- exists ((st2,c2)::q'). apply E_Nondet1. apply H7.
 Qed.
 
 Lemma choice_assoc: forall c1 c2 c3,
 <{ (c1 !! c2) !! c3 }> == <{ c1 !! (c2 !! c3) }>.
 Proof.
-  (* TODO *)
+(* TODO *)
 Qed.
 
 
