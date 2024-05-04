@@ -72,10 +72,10 @@ Inductive ceval : com -> state -> list (state * com) ->
 | E_GuardFalse : forall st1 q c c' st0 q0 st2 q' r b,
     beval st1 b = false ->
     st0 / ((st0,c')::q0) =[ c' ]=> st2 / q' / r ->
-    st1 / q =[ (b -> c) ]=> st2 / q' / r
+    st1 / q =[ (b -> c) ]=> st2 / q' / Fail
 | E_GuardFalseFail : forall st1 c st0 b,
     beval st1 b = false ->
-    st0 / ([]) =[ (b->c) ]=> st0 / [] / Fail
+    st1 / [] =[ (b -> c) ]=> st0 / [] / Fail
 
 (* TODO. Hint: follow the same structure as shown in the chapter Imp *)
 where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
@@ -99,8 +99,8 @@ Proof.
   apply E_Seq with (X !-> 2) [] Success.
   - apply E_Asgn. reflexivity.
   - apply E_IfFalse.
-    + reflexivity. 
-    + apply E_Asgn. reflexivity.
+    -- reflexivity. 
+    -- apply E_Asgn. reflexivity.
 Qed.
 
 
@@ -112,7 +112,7 @@ Example ceval_example_guard1:
 Proof.
   apply E_Seq with (X !-> 2) [] Success.
   - apply E_Asgn. reflexivity.
-    (* - apply E_GuardFalseFail. reflexivity. *) (* Doesn't work *)
+  - apply E_GuardFalseFail. reflexivity.
 Qed. 
 
 Example ceval_example_guard2:
@@ -121,7 +121,11 @@ empty_st / [] =[
    (X = 2) -> X:=3
 ]=> (X !-> 3 ; X !-> 2) / [] / Success.
 Proof.
-  (* TODO *)
+  apply E_Seq with (X !-> 2) [] Success.
+  - apply E_Asgn. reflexivity.
+  - apply E_GuardTrue.
+    -- reflexivity.
+    -- apply E_Asgn. reflexivity.
 Qed. 
 
 Example ceval_example_guard3: exists q,
@@ -131,8 +135,9 @@ empty_st / [] =[
 ]=> (X !-> 3) / q / Success.
 Proof.
   (* TODO *)
-Qed.
-    
+Admitted.
+
+
 Example ceval_example_guard4: exists q,
 empty_st / [] =[
    (X := 1 !! X := 2);
@@ -140,7 +145,7 @@ empty_st / [] =[
 ]=> (X !-> 3) / q / Success.
 Proof.
   (* TODO *)
-Qed.
+Admitted.
 
 
 
