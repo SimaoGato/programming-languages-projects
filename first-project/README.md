@@ -22,8 +22,8 @@ TODO: Identify what you have done and, in particular, **identify any missing fea
 | Definition of `ceval`                                  |      3      |           |
 | Proof of the examples `ceval_example_*`                |     2,5     |           |
 | Proof of `cequiv_ex1` and `cequiv_ex2`                 |     1,5     |           |
-| Idempotence                                            |     0,5     |           |
-| Commutativity                                          |     0,5     |           |
+| Idempotence                                            |     0,5     |     x     |
+| Commutativity                                          |     0,5     |     x     |
 | Associativity                                          |     0,5     |           |
 | Distributivity (left)                                  |     0,5     |           |
 | Congruence                                             |     0,5     |           |
