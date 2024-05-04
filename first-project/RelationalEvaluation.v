@@ -58,6 +58,25 @@ Inductive ceval : com -> state -> list (state * com) ->
     st2 / q2 =[ while b do c end ]=> st3 / q3 / r2 ->
     st1 / q1 =[ while b do c end ]=> st3 / q3 / r2
 
+(* TODO: Thins are probably wrong/inc *)
+| E_Nondet1 : forall st q c1 c2 st' q' r,
+    st / q =[ c1 ]=> st' / q' / r ->
+    st / q =[ c1 !! c2 ]=> st' / ((st',c2)::q') / r
+| E_Nondet2 : forall st q c1 c2 st' q' r,
+    st / q =[ c2 ]=> st' / q' / r ->
+    st / q =[ c1 !! c2 ]=> st' / ((st',c1)::q') / r
+| E_GuardTrue : forall st q st' q' b c r,
+    beval st b = true ->
+    st / q =[ c ]=> st' / q' / r ->
+    st / q =[ (b -> c) ]=> st' / q' / r
+| E_GuardFalse : forall st1 q c c' st0 q0 st2 q' r b,
+    beval st1 b = false ->
+    st0 / ((st0,c')::q0) =[ c' ]=> st2 / q' / r ->
+    st1 / q =[ (b -> c) ]=> st2 / q' / r
+| E_GuardFalseFail : forall st1 c st0 b,
+    beval st1 b = false ->
+    st0 / ([]) =[ (b->c) ]=> st0 / [] / Fail
+
 (* TODO. Hint: follow the same structure as shown in the chapter Imp *)
 where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
 
@@ -93,7 +112,7 @@ Example ceval_example_guard1:
 Proof.
   apply E_Seq with (X !-> 2) [] Success.
   - apply E_Asgn. reflexivity.
-  -
+    (* - apply E_GuardFalseFail. reflexivity. *) (* Doesn't work *)
 Qed. 
 
 Example ceval_example_guard2:
