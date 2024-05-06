@@ -224,11 +224,21 @@ Proof.
 Qed.
 
 Lemma choice_assoc: forall c1 c2 c3,
-<{ (c1 !! c2) !! c3 }> == <{ c1 !! (c2 !! c3) }>.
+  <{ (c1 !! c2) !! c3 }> == <{ c1 !! (c2 !! c3) }>.
 Proof.
-(* TODO *)
+  (* TODO *)
+  split; unfold cequiv_imp; intros.
+  - inversion H; subst.
+    inversion H7; subst.
+    -- exists ((st1,<{ c2 !! c3 }>)::q'0). apply E_Nondet1. apply H8.
+    -- exists ((st1,c1)::(st1,c3)::q'0). apply E_Nondet2. apply E_Nondet1. apply H8.
+    -- exists ((st1,c1)::(st1,c2)::q'). apply E_Nondet2. apply E_Nondet2. apply H7.
+  - inversion H; subst.
+    -- exists ((st1,c3)::(st1,c2)::q'). apply E_Nondet1. apply E_Nondet1. apply H7.
+    -- inversion H7; subst.
+       --- exists ((st1,c3)::(st1,c1)::q'0). apply E_Nondet1. apply E_Nondet2. apply H8.
+       --- exists ((st1,<{ c1 !! c2 }>)::q'0). apply E_Nondet2. apply H8.
 Qed.
-
 
 Lemma choice_seq_distr_l: forall c1 c2 c3,
 <{ c1 ; (c2 !! c3)}> == <{ (c1;c2) !! (c1;c3) }>.
