@@ -208,7 +208,7 @@ Proof.
   - inversion H; subst.
     -- exists q'. apply H7.
     -- exists q'. apply H7.
-  - exists ((st2,c)::q2). apply E_Nondet1. apply H.
+  - exists ((st1,c)::q2). apply E_Nondet1. apply H.
 Qed.
 
 Lemma choice_comm: forall c1 c2,
@@ -216,11 +216,11 @@ Lemma choice_comm: forall c1 c2,
 Proof.
   intros c1 c2; split; unfold cequiv_imp; intros.
   - inversion H; subst.
-    -- exists ((st2,c2)::q'). apply E_Nondet2. apply H7.
-    -- exists ((st2,c1)::q'). apply E_Nondet1. apply H7.
+    -- exists ((st1,c2)::q'). apply E_Nondet2. apply H7.
+    -- exists ((st1,c1)::q'). apply E_Nondet1. apply H7.
   - inversion H; subst.
-    -- exists ((st2,c1)::q'). apply E_Nondet2. apply H7.
-    -- exists ((st2,c2)::q'). apply E_Nondet1. apply H7.
+    -- exists ((st1,c1)::q'). apply E_Nondet2. apply H7.
+    -- exists ((st1,c2)::q'). apply E_Nondet1. apply H7.
 Qed.
 
 Lemma choice_assoc: forall c1 c2 c3,
