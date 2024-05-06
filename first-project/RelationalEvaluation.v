@@ -58,24 +58,27 @@ Inductive ceval : com -> state -> list (state * com) ->
     st2 / q2 =[ while b do c end ]=> st3 / q3 / r2 ->
     st1 / q1 =[ while b do c end ]=> st3 / q3 / r2
 
-(* TODO: Thins are probably wrong/inc *)
-| E_Nondet1 : forall st q c1 c2 st' q' r,
-    st / q =[ c1 ]=> st' / q' / r ->
-    st / q =[ c1 !! c2 ]=> st' / ((st',c2)::q') / r
-| E_Nondet2 : forall st q c1 c2 st' q' r,
-    st / q =[ c2 ]=> st' / q' / r ->
-    st / q =[ c1 !! c2 ]=> st' / ((st',c1)::q') / r
+(* TODO: These are probably wrong/inc *)
+| E_GuardFalseFail : forall st b c,
+    beval st b = false ->
+    st / [] =[ b -> c ]=> empty_st / [] / Fail (* <--- empty_st because we assume that failure always yields it *)
 | E_GuardTrue : forall st q st' q' b c r,
     beval st b = true ->
     st / q =[ c ]=> st' / q' / r ->
-    st / q =[ (b -> c) ]=> st' / q' / r
-| E_GuardFalse : forall st1 q c c' st0 q0 st2 q' r b,
-    beval st1 b = false ->
-    st0 / ((st0,c')::q0) =[ c' ]=> st2 / q' / r ->
-    st1 / q =[ (b -> c) ]=> st2 / q' / Fail
-| E_GuardFalseFail : forall st1 c st0 b,
-    beval st1 b = false ->
-    st1 / [] =[ (b -> c) ]=> st0 / [] / Fail
+    st / q =[ b -> c ]=> st' / q' / r
+
+| E_Nondet1 : forall st q c1 c2 st' q' r,
+    st / q =[ c1 ]=> st' / q' / r ->
+    st / q =[ c1 !! c2 ]=> st' / ((st,c2)::q') / r
+| E_Nondet2 : forall st q c1 c2 st' q' r,
+    st / q =[ c2 ]=> st' / q' / r ->
+    st / q =[ c1 !! c2 ]=> st' / ((st,c1)::q') / r
+| E_GuardFalseBacktrackTrue : forall st b c st_alt c_alt tq_alt st' q' r' st'' q'' r'',
+    beval st b = false ->
+    st_alt / tq_alt =[ c_alt ]=> st' / q' / r' ->
+    beval st' b = true ->
+    st' / q' =[ b -> c ]=> st'' / q'' / r'' ->
+    st / ((st_alt,c_alt)::tq_alt) =[ b -> c ]=> st'' / q'' / r''
 
 (* TODO. Hint: follow the same structure as shown in the chapter Imp *)
 where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
@@ -116,10 +119,10 @@ Proof.
 Qed. 
 
 Example ceval_example_guard2:
-empty_st / [] =[
-   X := 2;
-   (X = 2) -> X:=3
-]=> (X !-> 3 ; X !-> 2) / [] / Success.
+  empty_st / [] =[
+    X := 2;
+    (X = 2) -> X:=3
+  ]=> (X !-> 3 ; X !-> 2) / [] / Success.
 Proof.
   apply E_Seq with (X !-> 2) [] Success.
   - apply E_Asgn. reflexivity.
@@ -129,24 +132,40 @@ Proof.
 Qed. 
 
 Example ceval_example_guard3: exists q,
-empty_st / [] =[
-   (X := 1 !! X := 2);
-   (X = 2) -> X:=3
-]=> (X !-> 3) / q / Success.
+  empty_st / [] =[
+    (X := 1 !! X := 2);
+    (X = 2) -> X:=3
+  ]=> (X !-> 3) / q / Success.
 Proof.
-  (* TODO *)
-Admitted.
-
+  exists [].
+  apply E_Seq with (X !-> 1) [(empty_st, <{X := 2}>)] Success.
+  - apply E_Nondet1. apply E_Asgn. reflexivity.
+  - apply E_GuardFalseBacktrackTrue with (X !-> 2) [] Success.
+    -- reflexivity.
+    -- apply E_Asgn. reflexivity.
+    -- reflexivity. 
+    -- apply E_GuardTrue.
+      --- reflexivity.
+      --- replace (X !-> 3) with (X !-> 3; X !-> 2).
+        ---- apply E_Asgn. reflexivity.
+        ---- apply t_update_shadow.
+Qed.
 
 Example ceval_example_guard4: exists q,
-empty_st / [] =[
-   (X := 1 !! X := 2);
-   (X = 2) -> X:=3
-]=> (X !-> 3) / q / Success.
+  empty_st / [] =[
+    (X := 1 !! X := 2);
+    (X = 2) -> X:=3
+  ]=> (X !-> 3) / q / Success.
 Proof.
-  (* TODO *)
-Admitted.
-
+  exists [(empty_st, <{X := 1}>)].
+  apply E_Seq with (X !-> 2) [(empty_st, <{X := 1}>)] Success.
+  - apply E_Nondet2. apply E_Asgn. reflexivity.
+  - apply E_GuardTrue.
+    -- reflexivity.
+    -- replace (X !-> 3) with (X !-> 3; X !-> 2).
+      --- apply E_Asgn. reflexivity.
+      --- apply t_update_shadow. 
+Qed.
 
 
 (* 3.2. Behavioral equivalence *)

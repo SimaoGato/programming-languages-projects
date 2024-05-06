@@ -20,7 +20,7 @@ TODO: Identify what you have done and, in particular, **identify any missing fea
 | Proof of `ceval_step_more`                             |     2,5     |     x     |
 | **Task 3 (RelationalEvaluation.v)**                    |             |           |
 | Definition of `ceval`                                  |      3      |           |
-| Proof of the examples `ceval_example_*`                |     2,5     |           |
+| Proof of the examples `ceval_example_*`                |     2,5     |     x     |
 | Proof of `cequiv_ex1` and `cequiv_ex2`                 |     1,5     |           |
 | Idempotence                                            |     0,5     |     x     |
 | Commutativity                                          |     0,5     |     x     |
