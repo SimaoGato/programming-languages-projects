@@ -24,7 +24,7 @@ TODO: Identify what you have done and, in particular, **identify any missing fea
 | Proof of `cequiv_ex1` and `cequiv_ex2`                 |     1,5     |           |
 | Idempotence                                            |     0,5     |     x     |
 | Commutativity                                          |     0,5     |     x     |
-| Associativity                                          |     0,5     |           |
+| Associativity                                          |     0,5     |     x     |
 | Distributivity (left)                                  |     0,5     |           |
 | Congruence                                             |     0,5     |           |
 | **Task 4 (Standalone Interpreter)**                    |             |           |
