@@ -28,8 +28,8 @@ TODO: Identify what you have done and, in particular, **identify any missing fea
 | Distributivity (left)                                  |     0,5     |           |
 | Congruence                                             |     0,5     |           |
 | **Task 4 (Standalone Interpreter)**                    |             |           |
-| Extend `ImpParser.v`                                   |      1      |           |
-| Add at least three new `.lpro` programs to `examples/` |    0,75     |           |
+| Extend `ImpParser.v`                                   |      1      |     x     |
+| Add at least three new `.lpro` programs to `examples/` |    0,75     |     x     |
 
 # Extras
 TODO: Identify and describe additional work that you have done,

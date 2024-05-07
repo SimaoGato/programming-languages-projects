@@ -264,11 +264,11 @@ Lemma choice_seq_distr_l: forall c1 c2 c3,
 <{ c1 ; (c2 !! c3)}> == <{ (c1;c2) !! (c1;c3) }>.
 Proof.
   (* TODO *)
-Qed.
+Admitted.
 
 Lemma choice_congruence: forall c1 c1' c2 c2',
 c1 == c1' -> c2 == c2' ->
 <{ c1 !! c2 }> == <{ c1' !! c2' }>.
 Proof.
   (* TODO *)
-Qed.
+Admitted.

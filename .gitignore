@@ -43,3 +43,8 @@ time-of-build-after.log
 time-of-build-before.log
 time-of-build-both.log
 time-of-build-pretty.log
+
+# first project task 4 generated files
+first-project/imp.ml
+first-project/imp.mli
+first-project/interpreter
