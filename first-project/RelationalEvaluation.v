@@ -36,7 +36,7 @@ Inductive ceval : com -> state -> list (state * com) ->
     st / q =[ skip ]=> st / q / Success
 | E_Asgn : forall st q X a n,
     aeval st a = n ->
-    st / q =[ X := a ]=> (X !-> n ; st) / q / Success 
+    st / q =[ X := a ]=> (X !-> n ; st) / q / Success
 | E_Seq : forall c1 c2 st1 q1 st2 q2 st3 q3 r1 r2,
     st1 / q1 =[ c1 ]=> st2 / q2 / r1 ->
     st2 / q2 =[ c2 ]=> st3 / q3 / r2 ->
@@ -190,8 +190,30 @@ Lemma cequiv_ex1:
 <{ X := 2; X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
-  (* TODO *)
-Admitted.
+  split.
+  - unfold cequiv_imp.
+    intros.
+    exists q2.
+    inversion H; subst.
+    inversion H2; subst.
+    simpl in H2.
+    simpl in H8.
+    inversion H8; subst.
+    simpl in H9;
+    discriminate. simpl in H3.
+    inversion H10; subst.
+    -- apply E_Asgn. reflexivity.
+    -- simpl in H3. discriminate.
+  - unfold cequiv_imp.
+    intros.
+    exists q2.
+    inversion H; subst.
+    simpl in H. simpl. apply E_Seq with (X !-> 2;st1) q2 Success.
+    -- apply E_Asgn. reflexivity.
+    -- apply E_GuardTrue.
+       --- simpl. reflexivity.
+       --- apply E_Skip.
+Qed.
 
 Lemma cequiv_ex2:
 <{ (X := 1 !! X := 2); X = 2 -> skip }> == 
@@ -205,9 +227,7 @@ Lemma choice_idempotent: forall c,
 <{ c !! c }> == <{ c }>.
 Proof.
   intros c; split; unfold cequiv_imp; intros.
-  - inversion H; subst.
-    -- exists q'. apply H7.
-    -- exists q'. apply H7.
+  - inversion H; subst; exists q'; apply H7.
   - exists ((st1,c)::q2). apply E_Nondet1. apply H.
 Qed.
 
