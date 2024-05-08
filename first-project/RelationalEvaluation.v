@@ -267,8 +267,31 @@ Proof.
 Admitted.
 
 Lemma choice_congruence: forall c1 c1' c2 c2',
-c1 == c1' -> c2 == c2' ->
-<{ c1 !! c2 }> == <{ c1' !! c2' }>.
+  c1 == c1' -> c2 == c2' ->
+  <{ c1 !! c2 }> == <{ c1' !! c2' }>.
 Proof.
-  (* TODO *)
-Admitted.
+  intros c1 c1' c2 c2' H1 H2.
+  split; unfold cequiv_imp; intros.
+  - inversion H; subst.
+    -- apply H1 in H9. 
+       inversion H9.
+       exists ((st1,c2')::x).
+       apply E_Nondet1.
+       apply H0.
+    -- apply H2 in H9. 
+       inversion H9.
+       exists ((st1,c1')::x).
+       apply E_Nondet2.
+       apply H0.
+  - inversion H; subst.
+    -- apply H1 in H9. 
+       inversion H9.
+       exists ((st1,c2)::x).
+       apply E_Nondet1.
+       apply H0.
+    -- apply H2 in H9. 
+       inversion H9.
+       exists ((st1,c1)::x).
+       apply E_Nondet2.
+       apply H0.
+Qed.

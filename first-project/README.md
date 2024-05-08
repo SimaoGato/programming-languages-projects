@@ -26,7 +26,7 @@ TODO: Identify what you have done and, in particular, **identify any missing fea
 | Commutativity                                          |     0,5     |     x     |
 | Associativity                                          |     0,5     |     x     |
 | Distributivity (left)                                  |     0,5     |           |
-| Congruence                                             |     0,5     |           |
+| Congruence                                             |     0,5     |     x     |
 | **Task 4 (Standalone Interpreter)**                    |             |           |
 | Extend `ImpParser.v`                                   |      1      |     x     |
 | Add at least three new `.lpro` programs to `examples/` |    0,75     |     x     |
