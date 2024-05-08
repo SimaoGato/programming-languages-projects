@@ -85,7 +85,7 @@ where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
 
 
 (**
-  3.1. TODO: Use the new relational semantics to prove the examples
+  3.1. DONE: Use the new relational semantics to prove the examples
              ceval_example_if, ceval_example_guard1, ceval_example_guard2,
              ceval_example_guard3 and ceval_example_guard4.
 *)
@@ -190,25 +190,15 @@ Lemma cequiv_ex1:
 <{ X := 2; X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
-  split.
-  - unfold cequiv_imp.
-    intros.
-    exists q2.
-    inversion H; subst.
-    inversion H2; subst.
-    simpl in H2.
-    simpl in H8.
+  split; unfold cequiv_imp; intros; exists q2; inversion H; subst.
+  - inversion H2; subst.
+    simpl in H2. simpl in H8.
     inversion H8; subst.
-    simpl in H9;
-    discriminate. simpl in H3.
+    simpl in H9; discriminate.
     inversion H10; subst.
     -- apply E_Asgn. reflexivity.
     -- simpl in H3. discriminate.
-  - unfold cequiv_imp.
-    intros.
-    exists q2.
-    inversion H; subst.
-    simpl in H. simpl. apply E_Seq with (X !-> 2;st1) q2 Success.
+  - simpl in H. simpl. apply E_Seq with (X !-> 2;st1) q2 Success.
     -- apply E_Asgn. reflexivity.
     -- apply E_GuardTrue.
        --- simpl. reflexivity.
@@ -219,8 +209,32 @@ Lemma cequiv_ex2:
 <{ (X := 1 !! X := 2); X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
-  (* TODO *)
-Admitted.
+  split; unfold cequiv_imp; intros.
+  - inversion H; subst.
+    inversion H2; subst.
+    inversion H8; subst.
+    inversion H9; subst.
+    simpl in H3.
+    -- discriminate.
+    -- inversion H13; subst.
+       inversion H15; subst.
+       --- discriminate.
+       --- inversion H12; subst.
+           exists q1. apply E_Asgn. reflexivity.
+       --- discriminate.
+    -- inversion H8; subst.
+       inversion H11; subst.
+       --- inversion H9; subst.
+           eexists. apply E_Asgn. reflexivity.
+       --- inversion H9; subst.
+           inversion H8; subst; discriminate.
+  - inversion H; subst.
+    eexists. eapply E_Seq.
+    -- apply E_Nondet2. apply E_Asgn. reflexivity.
+    -- apply E_GuardTrue.
+       --- simpl. reflexivity.
+       --- apply E_Skip.
+Qed.
 
 
 Lemma choice_idempotent: forall c,
@@ -246,7 +260,6 @@ Qed.
 Lemma choice_assoc: forall c1 c2 c3,
   <{ (c1 !! c2) !! c3 }> == <{ c1 !! (c2 !! c3) }>.
 Proof.
-  (* TODO *)
   split; unfold cequiv_imp; intros.
   - inversion H; subst.
     inversion H7; subst.
@@ -263,7 +276,6 @@ Qed.
 Lemma choice_seq_distr_l: forall c1 c2 c3,
 <{ c1 ; (c2 !! c3)}> == <{ (c1;c2) !! (c1;c3) }>.
 Proof.
-  (* TODO *)
   intros c1 c2 c3; split; unfold cequiv_imp; intros st1 st2 q1 q2 r.
   - intros H. inversion H; subst. inversion H8; subst.
     exists ((st1,<{c1;c3}>)::q'). eapply E_Nondet1.
@@ -288,27 +300,25 @@ Lemma choice_congruence: forall c1 c1' c2 c2',
   <{ c1 !! c2 }> == <{ c1' !! c2' }>.
 Proof.
   intros c1 c1' c2 c2' H1 H2.
-  split; unfold cequiv_imp; intros.
-  - inversion H; subst.
-    -- apply H1 in H9. 
-       inversion H9.
-       exists ((st1,c2')::x).
-       apply E_Nondet1.
-       apply H0.
-    -- apply H2 in H9. 
-       inversion H9.
-       exists ((st1,c1')::x).
-       apply E_Nondet2.
-       apply H0.
-  - inversion H; subst.
-    -- apply H1 in H9. 
-       inversion H9.
-       exists ((st1,c2)::x).
-       apply E_Nondet1.
-       apply H0.
-    -- apply H2 in H9. 
-       inversion H9.
-       exists ((st1,c1)::x).
-       apply E_Nondet2.
-       apply H0.
+  split; unfold cequiv_imp; intros; inversion H; subst.
+  - apply H1 in H9. 
+    inversion H9.
+    exists ((st1,c2')::x).
+    apply E_Nondet1.
+    apply H0.
+  - apply H2 in H9. 
+    inversion H9.
+    exists ((st1,c1')::x).
+    apply E_Nondet2.
+    apply H0.
+  - apply H1 in H9. 
+    inversion H9.
+    exists ((st1,c2)::x).
+    apply E_Nondet1.
+    apply H0.
+  - apply H2 in H9. 
+    inversion H9.
+    exists ((st1,c1)::x).
+    apply E_Nondet2.
+    apply H0.
 Qed.
