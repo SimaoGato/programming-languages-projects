@@ -27,7 +27,7 @@ Reserved Notation "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r"
  r constr at next level).
 
 (* 
-3. TODO: Define the relational semantics (ceval) to support the required constructs.
+3. DONE: Define the relational semantics (ceval) to support the required constructs.
 *)
 
 Inductive ceval : com -> state -> list (state * com) -> 
@@ -57,8 +57,6 @@ Inductive ceval : com -> state -> list (state * com) ->
     st1 / q1 =[ c ]=> st2 / q2 / r1 ->
     st2 / q2 =[ while b do c end ]=> st3 / q3 / r2 ->
     st1 / q1 =[ while b do c end ]=> st3 / q3 / r2
-
-(* TODO: These are probably wrong/inc *)
 | E_GuardFalseFail : forall st b c,
     beval st b = false ->
     st / [] =[ b -> c ]=> empty_st / [] / Fail (* <--- empty_st because we assume that failure always yields it *)
@@ -66,19 +64,19 @@ Inductive ceval : com -> state -> list (state * com) ->
     beval st b = true ->
     st / q =[ c ]=> st' / q' / r ->
     st / q =[ b -> c ]=> st' / q' / r
-
-| E_Nondet1 : forall st q c1 c2 st' q' r,
-    st / q =[ c1 ]=> st' / q' / r ->
-    st / q =[ c1 !! c2 ]=> st' / ((st,c2)::q') / r
-| E_Nondet2 : forall st q c1 c2 st' q' r,
-    st / q =[ c2 ]=> st' / q' / r ->
-    st / q =[ c1 !! c2 ]=> st' / ((st,c1)::q') / r
 | E_GuardFalseBacktrackTrue : forall st b c st_alt c_alt tq_alt st' q' r' st'' q'' r'',
     beval st b = false ->
     st_alt / tq_alt =[ c_alt ]=> st' / q' / r' ->
     beval st' b = true ->
     st' / q' =[ b -> c ]=> st'' / q'' / r'' ->
     st / ((st_alt,c_alt)::tq_alt) =[ b -> c ]=> st'' / q'' / r''
+| E_Nondet1 : forall st q c1 c2 st' q' r,
+    st / q =[ c1 ]=> st' / q' / r ->
+    st / q =[ c1 !! c2 ]=> st' / ((st,c2)::q') / r
+| E_Nondet2 : forall st q c1 c2 st' q' r,
+    st / q =[ c2 ]=> st' / q' / r ->
+    st / q =[ c1 !! c2 ]=> st' / ((st,c1)::q') / r
+
 
 (* TODO. Hint: follow the same structure as shown in the chapter Imp *)
 where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
@@ -183,7 +181,7 @@ Infix "==" := cequiv (at level 99).
 
 
 (**
-  3.2. TODO: Prove the properties below.
+  3.2. DONE: Prove the properties below.
 *)
 
 Lemma cequiv_ex1:
@@ -209,9 +207,8 @@ Lemma cequiv_ex2:
 <{ (X := 1 !! X := 2); X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
-  split; unfold cequiv_imp; intros.
-  - inversion H; subst.
-    inversion H2; subst.
+  split; unfold cequiv_imp; intros; inversion H; subst.
+  - inversion H2; subst.
     inversion H8; subst.
     inversion H9; subst.
     simpl in H3.
@@ -225,7 +222,7 @@ Proof.
     -- inversion H8; subst.
        inversion H11; subst.
        --- inversion H9; subst.
-           eexists. apply E_Asgn. reflexivity.
+           exists q'. apply E_Asgn. reflexivity.
        --- inversion H9; subst.
            inversion H8; subst; discriminate.
   - inversion H; subst.
@@ -246,38 +243,34 @@ Proof.
 Qed.
 
 Lemma choice_comm: forall c1 c2,
-<{ c1 !! c2 }> == <{ c2 !! c1 }>.
+  <{ c1 !! c2 }> == <{ c2 !! c1 }>.
 Proof.
-  intros c1 c2; split; unfold cequiv_imp; intros.
-  - inversion H; subst.
-    -- exists ((st1,c2)::q'). apply E_Nondet2. apply H7.
-    -- exists ((st1,c1)::q'). apply E_Nondet1. apply H7.
-  - inversion H; subst.
-    -- exists ((st1,c1)::q'). apply E_Nondet2. apply H7.
-    -- exists ((st1,c2)::q'). apply E_Nondet1. apply H7.
+  intros c1 c2; split; unfold cequiv_imp; intros; inversion H; subst.
+  - exists ((st1,c2)::q'). apply E_Nondet2. apply H7.
+  - exists ((st1,c1)::q'). apply E_Nondet1. apply H7.
+  - exists ((st1,c1)::q'). apply E_Nondet2. apply H7.
+  - exists ((st1,c2)::q'). apply E_Nondet1. apply H7.
 Qed.
 
 Lemma choice_assoc: forall c1 c2 c3,
   <{ (c1 !! c2) !! c3 }> == <{ c1 !! (c2 !! c3) }>.
 Proof.
-  split; unfold cequiv_imp; intros.
-  - inversion H; subst.
-    inversion H7; subst.
+  split; unfold cequiv_imp; intros; inversion H; subst.
+  - inversion H7; subst.
     -- exists ((st1,<{ c2 !! c3 }>)::q'0). apply E_Nondet1. apply H8.
     -- exists ((st1,c1)::(st1,c3)::q'0). apply E_Nondet2. apply E_Nondet1. apply H8.
-    -- exists ((st1,c1)::(st1,c2)::q'). apply E_Nondet2. apply E_Nondet2. apply H7.
-  - inversion H; subst.
-    -- exists ((st1,c3)::(st1,c2)::q'). apply E_Nondet1. apply E_Nondet1. apply H7.
-    -- inversion H7; subst.
-       --- exists ((st1,c3)::(st1,c1)::q'0). apply E_Nondet1. apply E_Nondet2. apply H8.
-       --- exists ((st1,<{ c1 !! c2 }>)::q'0). apply E_Nondet2. apply H8.
+  - exists ((st1,c1)::(st1,c2)::q'). apply E_Nondet2. apply E_Nondet2. apply H7.
+  - exists ((st1,c3)::(st1,c2)::q'). apply E_Nondet1. apply E_Nondet1. apply H7.
+  - inversion H7; subst.
+    -- exists ((st1,c3)::(st1,c1)::q'0). apply E_Nondet1. apply E_Nondet2. apply H8.
+    -- exists ((st1,<{ c1 !! c2 }>)::q'0). apply E_Nondet2. apply H8.
 Qed.
 
 Lemma choice_seq_distr_l: forall c1 c2 c3,
 <{ c1 ; (c2 !! c3)}> == <{ (c1;c2) !! (c1;c3) }>.
 Proof.
   intros c1 c2 c3; split; unfold cequiv_imp; intros st1 st2 q1 q2 r.
-  - intros H. inversion H; subst. inversion H8; subst.
+  - intros H. inversion H; subst; inversion H8; subst.
     exists ((st1,<{c1;c3}>)::q'). eapply E_Nondet1.
     -- eapply E_Seq.
        --- apply H2.
