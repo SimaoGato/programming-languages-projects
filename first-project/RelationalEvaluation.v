@@ -264,7 +264,24 @@ Lemma choice_seq_distr_l: forall c1 c2 c3,
 <{ c1 ; (c2 !! c3)}> == <{ (c1;c2) !! (c1;c3) }>.
 Proof.
   (* TODO *)
-Admitted.
+  intros c1 c2 c3; split; unfold cequiv_imp; intros st1 st2 q1 q2 r.
+  - intros H. inversion H; subst. inversion H8; subst.
+    exists ((st1,<{c1;c3}>)::q'). eapply E_Nondet1.
+    -- eapply E_Seq.
+       --- apply H2.
+       --- apply H9.
+    -- exists ((st1,<{c1;c2}>)::q'). eapply E_Nondet2.
+       --- eapply E_Seq.
+           ---- apply H2.
+           ---- apply H9.
+  - intros H. inversion H; subst; inversion H7; subst.
+    -- exists ((st3,c3)::q'). apply E_Seq with st3 q2 r1.
+       --- apply H2.
+       --- apply E_Nondet1. apply H9.
+    -- exists ((st3,c2)::q'). apply E_Seq with st3 q2 r1.
+       --- apply H2.
+       --- apply E_Nondet2. apply H9.
+Qed.
 
 Lemma choice_congruence: forall c1 c1' c2 c2',
   c1 == c1' -> c2 == c2' ->
