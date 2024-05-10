@@ -78,7 +78,7 @@ Inductive ceval : com -> state -> list (state * com) ->
     st / q =[ c1 !! c2 ]=> st' / ((st,c1)::q') / r
 
 
-(* TODO. Hint: follow the same structure as shown in the chapter Imp *)
+(* Hint: follow the same structure as shown in the chapter Imp *)
 where "st1 '/' q1 '=[' c ']=>' st2 '/' q2 '/' r" := (ceval c st1 q1 r st2 q2).
 
 
@@ -138,10 +138,8 @@ Proof.
   exists [].
   apply E_Seq with (X !-> 1) [(empty_st, <{X := 2}>)] Success.
   - apply E_Nondet1. apply E_Asgn. reflexivity.
-  - apply E_GuardFalseBacktrackTrue with (X !-> 2) [] Success.
-    -- reflexivity.
+  - apply E_GuardFalseBacktrackTrue with (X !-> 2) [] Success; try reflexivity.
     -- apply E_Asgn. reflexivity.
-    -- reflexivity. 
     -- apply E_GuardTrue.
       --- reflexivity.
       --- replace (X !-> 3) with (X !-> 3; X !-> 2).
@@ -188,7 +186,7 @@ Lemma cequiv_ex1:
 <{ X := 2; X = 2 -> skip }> == 
 <{ X := 2 }>.
 Proof.
-  split; unfold cequiv_imp; intros; exists q2; inversion H; subst.
+  split; unfold cequiv_imp; intros; exists q2; inversion H; subst; simpl in H.
   - inversion H2; subst.
     simpl in H2. simpl in H8.
     inversion H8; subst.
@@ -196,7 +194,7 @@ Proof.
     inversion H10; subst.
     -- apply E_Asgn. reflexivity.
     -- simpl in H3. discriminate.
-  - simpl in H. simpl. apply E_Seq with (X !-> 2;st1) q2 Success.
+  - apply E_Seq with (X !-> 2;st1) q2 Success.
     -- apply E_Asgn. reflexivity.
     -- apply E_GuardTrue.
        --- simpl. reflexivity.
@@ -214,19 +212,17 @@ Proof.
     simpl in H3.
     -- discriminate.
     -- inversion H13; subst.
-       inversion H15; subst.
-       --- discriminate.
+       inversion H15; subst; try discriminate.
        --- inversion H12; subst.
            exists q1. apply E_Asgn. reflexivity.
-       --- discriminate.
     -- inversion H8; subst.
        inversion H11; subst.
        --- inversion H9; subst.
            exists q'. apply E_Asgn. reflexivity.
        --- inversion H9; subst.
            inversion H8; subst; discriminate.
-  - inversion H; subst.
-    eexists. eapply E_Seq.
+  - exists ((st1, <{ X := 1 }>) :: q2). 
+    apply E_Seq with (X !-> 2; st1) ((st1, <{ X := 1 }>) :: q2) Success.
     -- apply E_Nondet2. apply E_Asgn. reflexivity.
     -- apply E_GuardTrue.
        --- simpl. reflexivity.

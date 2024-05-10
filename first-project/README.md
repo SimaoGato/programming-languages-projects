@@ -6,11 +6,13 @@
 
 # Implemented Features
 
-We successfully implemented all the tasks of the assignment. 
+We successfully implemented all the tasks of the assignment. We collaborated
+on all tasks, and all members of the group contributed to the final solution.
+This means that we did not have to divide the tasks among the group members.
 
 | Task                                                   | Marks (max) | Completed |
 | ------------------------------------------------------ | :---------: | :-------: |
-| README file properly filled in                         |    0,25     |           |
+| README file properly filled in                         |    0,25     |     x     |
 | **Task 1 (Imp.v)**                                     |             |           |
 | Extend `com`                                           |      1      |     x     |
 | New notation                                           |     0,5     |     x     |
@@ -33,5 +35,5 @@ We successfully implemented all the tasks of the assignment.
 | Add at least three new `.lpro` programs to `examples/` |    0,75     |     x     |
 
 # Extras
-TODO: Identify and describe additional work that you have done,
-      so that it can be considered for extra credits.
+Unfortunately, due to time constraints and work of other courses, we were not 
+able to implement any extra features.

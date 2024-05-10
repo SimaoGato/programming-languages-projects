@@ -174,21 +174,21 @@ Proof.
   - (* i1 = S i1' *)
     destruct i2 as [| i2']. inversion Hle.
     assert (Hle': i1' <= i2') by lia.
-    destruct c.
+    destruct c; simpl in Hceval.
     -- (* skip *)
-      simpl in Hceval. inversion Hceval. reflexivity.
+      inversion Hceval. reflexivity.
     -- (* := *)
-      simpl in Hceval. inversion Hceval. reflexivity.
+      inversion Hceval. reflexivity.
     -- (* ; *)
-      simpl in Hceval. simpl. destruct (ceval_step st c1 cont i1') eqn:Heq1.
+      simpl. destruct (ceval_step st c1 cont i1') eqn:Heq1.
       --- destruct s. apply (IHi1' i2') in Heq1; try assumption.
           rewrite Heq1. simpl. apply IHi1' with (i2:=i2') in Hceval; try assumption.
       --- discriminate Hceval.
       --- discriminate Hceval.
     -- (* if *)
-      simpl in Hceval. simpl. destruct (beval st b); apply ( IHi1' i2') in Hceval; assumption.
+      simpl. destruct (beval st b); apply ( IHi1' i2') in Hceval; assumption.
     -- (* while *)
-      simpl in Hceval. destruct (beval st b) eqn:Heq.
+      destruct (beval st b) eqn:Heq.
       --- simpl. rewrite Heq. destruct (ceval_step st c cont i1') eqn:Heq1.
           ---- destruct s. apply IHi1' with (i2:=i2') in Heq1; try assumption.
               rewrite Heq1. simpl. apply IHi1' with (i2:=i2') in Hceval; try assumption.
@@ -196,12 +196,12 @@ Proof.
           ---- discriminate Hceval.
       --- simpl. rewrite Heq. try assumption.
     -- (* !! *)
-      simpl in Hceval. destruct (ceval_step st <{ c1 !! c2 }> cont i1') eqn:Heq1.
+      destruct (ceval_step st <{ c1 !! c2 }> cont i1') eqn:Heq1.
       --- destruct i1'. discriminate Hceval. simpl. apply IHi1' with (i2:=i2') in Hceval; try assumption.
       --- destruct i1'. discriminate Hceval. simpl. apply IHi1' with (i2:=i2') in Hceval; try assumption.
       --- destruct i1'. discriminate Hceval. simpl. apply IHi1' with (i2:=i2') in Hceval; try assumption.
     -- (* -> *)
-      simpl in Hceval. destruct (beval st b) eqn:Heq.
+      destruct (beval st b) eqn:Heq.
       --- simpl. rewrite Heq. apply IHi1' with (i2:=i2') in Hceval; try assumption.
       --- simpl. rewrite Heq. destruct cont.
           ---- discriminate Hceval.
