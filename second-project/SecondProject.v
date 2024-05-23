@@ -487,14 +487,14 @@ Inductive cstep : (com * result)  -> (com * result) -> Prop :=
 
   (* TODO *)
   | CS_AssertStep : forall st b b',
-      b / st -->b b ->
+      b / st -->b b' ->
       <{ assert b }> / RNormal st --> <{ assert b' }> / RNormal st 
   | CS_AssertTrue : forall st,
       <{ assert true }> / RNormal st --> <{ skip }> / RNormal st
   | CS_AssertFalse : forall st,
       <{ assert false }> / RNormal st --> <{ skip }> / RError
   | CS_AssumeStep : forall st b b',
-      b / st -->b b ->
+      b / st -->b b' ->
       <{ assume b }> / RNormal st --> <{ assume b' }> / RNormal st
   | CS_AssumeTrue : forall st,
       <{ assume true }> / RNormal st --> <{ skip }> / RNormal st
@@ -563,6 +563,13 @@ Example prog1_example1:
     /\ st' X = 2.
 Proof.
   (* TODO: *)
+  eexists. split.
+  unfold prog1.
+  eapply multi_step. apply CS_SeqStep.
+  - apply CS_AssumeStep. apply BS_Eq1. apply AS_Id.
+  - eapply multi_step. apply CS_SeqStep.
+  -- apply CS_AssumeStep. apply BS_Eq1. apply t_update.
+     (* Continue... *)
 Admitted.
 
 
