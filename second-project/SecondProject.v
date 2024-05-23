@@ -394,8 +394,13 @@ Theorem hoare_assume: forall (P:Assertion) (b:bexp),
   {{P /\ b}} assume b {{P}}.
 Proof.
   (* TODO: *)
+  unfold hoare_triple.
+  intros.
+  inversion H; subst.
+  exists st. split; try reflexivity.
+  destruct H0.
+  apply H0.
 Qed.
-
 
 (* ================================================================= *)
 (* EXERCISE 3.3: State and prove [hoare_choice]                      *)
