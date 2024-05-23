@@ -371,7 +371,7 @@ Qed.
 (* EXERCISE 3.1: State and prove [hoare_assert]                      *)
 (* ================================================================= *)
 
-(* TODO: *)
+(* TODO: Hoare proof rule for [assert] *)
 Theorem hoare_assert: forall P (b: bexp),
   {{P /\ b}} assert b {{P}}.
 Proof.
@@ -389,7 +389,7 @@ Qed.
 (* EXERCISE 3.2: State and prove [hoare_assume]                      *)
 (* ================================================================= *)
 
-(* TODO: *)
+(* TODO: Hoare proof rule for [assume] *)
 Theorem hoare_assume: forall (P:Assertion) (b:bexp),
   {{P /\ b}} assume b {{P}}.
 Proof.
@@ -406,12 +406,23 @@ Qed.
 (* EXERCISE 3.3: State and prove [hoare_choice]                      *)
 (* ================================================================= *)
 
+(*TODO: Hoare proof rule for [c1 !! c2] *)
 Theorem hoare_choice' : forall P c1 c2 Q,
-  (*TODO: Hoare proof rule for [c1 !! c2] *)
+  {{P}} c1 {{Q}} ->
+  {{P}} c2 {{Q}} ->
+  {{P}} c1 !! c2 {{Q}}.
 Proof.
   (* TODO *)
+  unfold hoare_triple.
+  intros.
+  inversion H1; subst.
+  - apply H with (st := st).
+    -- apply H7.
+    -- apply H2.
+  - apply H0 with (st := st).
+    -- apply H7.
+    -- apply H2.
 Qed.
-
 
 (* ================================================================= *)
 (* EXERCISE 3.4: Use the proof rules defined to prove the following  *)
@@ -419,12 +430,24 @@ Qed.
 (*               words what this example is demonstrating.           *)                                            
 (* ================================================================= *)
 
+(*
+  TODO: Add a comment explaining what the example is demonstrating.
+*)
 Example hoare_choice_example:
   {{ X = 1 }}
   X := X + 1 !! X := X + 2
   {{ X = 2 \/ X = 3 }}.
 Proof.
-  ( * TODO *)
+  (* TODO: *)
+  apply hoare_choice'.
+  - eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + unfold "->>". intros st H. simpl. left.
+      rewrite t_update_eq. simpl. simpl in H. rewrite H. reflexivity.
+  - eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + unfold "->>". intros st H. simpl. right.
+      rewrite t_update_eq. simpl. simpl in H. rewrite H. reflexivity.
 Qed.
 
 
