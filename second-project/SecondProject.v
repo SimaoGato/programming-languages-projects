@@ -778,7 +778,10 @@ Fixpoint extract (d : dcom) : com :=
   | DCWhile b _ d _    => CWhile b (extract d)
   | DCPre _ d          => extract d
   | DCPost d _         => extract d
-  (* TODO *)
+  (* TODO: *)
+  | DCAssert b _      => CAssert b
+  | DCAssume b _      => CAssume b
+  | DCNonDetChoice d1 d2 => CNonDetChoice (extract d1) (extract d2)
   end.
 
 Definition extract_dec (dec : decorated) : com :=
@@ -811,7 +814,10 @@ Fixpoint post (d : dcom) : Assertion :=
   | DCWhile _ _ _ Q         => Q
   | DCPre _ d               => post d
   | DCPost _ Q              => Q
-  (* TODO *)
+  (* TODO: *)
+  | DCAssert _ Q           => Q
+  | DCAssume _ Q           => Q
+  | DCNonDetChoice d1 d2   => post d1 \/ post d2
   end.
 
 Definition post_dec (dec : decorated) : Assertion :=

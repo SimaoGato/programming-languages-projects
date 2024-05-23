@@ -20,9 +20,9 @@
 - [x] Exercise 7 (1 point)
     - [x] Define dcom
     - [x] Define notations
-- [ ] Exercise 8 (1 point)
-    - [ ] Define extract
-    - [ ] Define post
+- [x] Exercise 8 (1 point)
+    - [x] Define extract
+    - [x] Define post
 - [ ] Exercise 9 (2 points)
     - [ ] Define verification_conditions
 - [ ] Exercise 10 (2 points)
