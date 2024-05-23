@@ -486,7 +486,22 @@ Inductive cstep : (com * result)  -> (com * result) -> Prop :=
       --> <{ if b then (c1; while b do c1 end) else skip end }> / st
 
   (* TODO *)
-  
+  | CS_AssertStep : forall st b b',
+      b / st -->b b ->
+      <{ assert b }> / RNormal st --> <{ assert b' }> / RNormal st 
+  | CS_AssertTrue : forall st,
+      <{ assert true }> / RNormal st --> <{ skip }> / RNormal st
+  | CS_AssertFalse : forall st,
+      <{ assert false }> / RNormal st --> <{ skip }> / RError
+  | CS_AssumeStep : forall st b b',
+      b / st -->b b ->
+      <{ assume b }> / RNormal st --> <{ assume b' }> / RNormal st
+  | CS_AssumeTrue : forall st,
+      <{ assume true }> / RNormal st --> <{ skip }> / RNormal st
+  | CS_NonDetChoice1 : forall st c1 c2,
+      <{ c1 !! c2 }> / st --> c1 / st
+  | CS_NonDetChoice2 : forall st c1 c2,
+      <{ c1 !! c2 }> / st --> c2 / st
 
   where " t '/' st '-->' t' '/' st' " := (cstep (t,st) (t',st')).
 
@@ -547,8 +562,8 @@ Example prog1_example1:
        prog1 / RNormal (X !-> 1) -->* <{ skip }> / RNormal st'
     /\ st' X = 2.
 Proof.
-  (* TODO *)
-Qed.
+  (* TODO: *)
+Admitted.
 
 
 (* ################################################################# *)
@@ -559,7 +574,9 @@ Lemma one_step_aeval_a: forall st a a',
   a / st -->a a' ->
   aeval st a = aeval st a'.
 Proof.
-  (* TODO (Hint: you can prove this by induction on a) *)
+  (* TODO:(Hint: you can prove this by induction on a) *)
+  intros.
+  induction H; simpl; try reflexivity; rewrite IHastep; reflexivity.
 Qed.
 
 
