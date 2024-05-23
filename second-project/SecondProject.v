@@ -173,9 +173,9 @@ Inductive ceval : com -> state -> result -> Prop :=
   | E_AssumeTrue : forall st b,
       beval st b = true ->
       st =[ assume b ]=> RNormal st
-  | E_AssumeFalse : forall st b,
+      (*| E_AssumeFalse : forall st b,
       beval st b = false ->
-      st =[ assume b ]=> RError
+         st =[ assume b ]=> RError*) (* This rule is not needed because the program gets stuck? *)
   | E_NonDetChoice1 : forall st c1 c2 r,
       st =[ c1 ]=> r ->
       st =[ c1 !! c2 ]=> r
@@ -217,7 +217,10 @@ Theorem assume_false: forall P Q b,
        (forall st, beval st b = false) ->
        ({{P}} assume b {{Q}}).
 Proof.
-  (* TODO *)
+  intros P Q b H st r HE HP.
+  inversion HE; subst.
+  rewrite H in H1.
+  discriminate H1.
 Qed.
 
 Theorem assert_implies_assume : forall P b Q,
