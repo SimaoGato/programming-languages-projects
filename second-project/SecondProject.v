@@ -163,7 +163,7 @@ Inductive ceval : com -> state -> result -> Prop :=
       beval st b = true ->
       st =[ c ]=> RError ->
       st =[ while b do c end ]=> RError
-  (* TODO *)
+  (* TODO: *)
   | E_AssertTrue : forall st b,
       beval st b = true ->
       st =[ assert b ]=> RNormal st
