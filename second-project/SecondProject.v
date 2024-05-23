@@ -686,9 +686,9 @@ Inductive dcom : Type :=
   (* ->> {{ P }} d *)
 | DCPost (d : dcom) (Q : Assertion)
   (* d ->> {{ Q }} *)
-| DCAssert (* TODO *) 
-| DCAssume (* TODO *)
-| DCNonDetChoice (* TODO *)
+| DCAssert (b : bexp) (Q : Assertion)
+| DCAssume (b : bexp) (Q : Assertion)
+| DCNonDetChoice (d1 d2 : dcom).
 
 (** To provide the initial precondition that goes at the very top of a
     decorated program, we introduce a new type [decorated]: *)
@@ -732,6 +732,16 @@ Notation "{{ P }} d"
 
 
 (* TODO: notation for the three new constructs *)
+(* NOT SURE ABOUT THE LEVELS AND STUFF!!!!! *)
+Notation "'assert' l {{ P }}"
+      := (DCAssert l P)
+      (in custom com at level 90, l constr, P constr) : dcom_scope.
+Notation "'assume' l {{ P }}"
+      := (DCAssume l P)
+      (in custom com at level 90, l constr, P constr) : dcom_scope.
+Notation "d1 '!!' d2"
+      := (DCNonDetChoice d1 d2)
+      (in custom com at level 90, right associativity) : dcom_scope.
 
 Local Open Scope dcom_scope.
 

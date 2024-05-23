@@ -17,9 +17,9 @@
     - [ ] Example prog1_example1
 - [x] Exercise 6 (1 point)
     - [x] Lemma one_step_aeval_a
-- [ ] Exercise 7 (1 point)
-    - [ ] Define dcom
-    - [ ] Define notations
+- [x] Exercise 7 (1 point)
+    - [x] Define dcom
+    - [x] Define notations
 - [ ] Exercise 8 (1 point)
     - [ ] Define extract
     - [ ] Define post
