@@ -217,6 +217,7 @@ Theorem assume_false: forall P Q b,
        (forall st, beval st b = false) ->
        ({{P}} assume b {{Q}}).
 Proof.
+  (* TODO: *)
   unfold hoare_triple. intros. 
   inversion H0. subst. rewrite H in H3.
   discriminate H3.
@@ -226,6 +227,7 @@ Theorem assert_implies_assume : forall P b Q,
      ({{P}} assert b {{Q}})
   -> ({{P}} assume b {{Q}}).
 Proof.
+  (* TODO: *)
   unfold hoare_triple. intros.
   inversion H0; subst.
   apply H with (st := st) (r := RNormal st); try assumption.
@@ -369,20 +371,29 @@ Qed.
 (* EXERCISE 3.1: State and prove [hoare_assert]                      *)
 (* ================================================================= *)
 
+(* TODO: *)
 Theorem hoare_assert: forall P (b: bexp),
-  (*TODO: Hoare proof rule for [assert b] *)
+  {{P /\ b}} assert b {{P}}.
 Proof.
-  (* TODO *)
+  (* TODO: *)
+  unfold hoare_triple.
+  intros.
+  inversion H ; subst.
+  - exists st. split; try reflexivity.
+    destruct H0.
+    apply H0.
+  - destruct H0. rewrite H1 in H2. discriminate H2.
 Qed.
 
 (* ================================================================= *)
 (* EXERCISE 3.2: State and prove [hoare_assume]                      *)
 (* ================================================================= *)
 
+(* TODO: *)
 Theorem hoare_assume: forall (P:Assertion) (b:bexp),
-  (*TODO: Hoare proof rule for [assume b] *)
+  {{P /\ b}} assume b {{P}}.
 Proof.
-  (* TODO *)
+  (* TODO: *)
 Qed.
 
 
