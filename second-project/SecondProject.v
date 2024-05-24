@@ -163,7 +163,7 @@ Inductive ceval : com -> state -> result -> Prop :=
       beval st b = true ->
       st =[ c ]=> RError ->
       st =[ while b do c end ]=> RError
-  (* TODO: *)
+  (* DONE: *)
   | E_AssertTrue : forall st b,
       beval st b = true ->
       st =[ assert b ]=> RNormal st
@@ -217,7 +217,7 @@ Theorem assume_false: forall P Q b,
        (forall st, beval st b = false) ->
        ({{P}} assume b {{Q}}).
 Proof.
-  (* TODO: *)
+  (* DONE: *)
   unfold hoare_triple. intros. 
   inversion H0. subst. rewrite H in H3.
   discriminate H3.
@@ -227,7 +227,7 @@ Theorem assert_implies_assume : forall P b Q,
      ({{P}} assert b {{Q}})
   -> ({{P}} assume b {{Q}}).
 Proof.
-  (* TODO: *)
+  (* DONE: *)
   unfold hoare_triple. intros.
   inversion H0; subst.
   apply H with (st := st) (r := RNormal st); try assumption.
@@ -371,11 +371,11 @@ Qed.
 (* EXERCISE 3.1: State and prove [hoare_assert]                      *)
 (* ================================================================= *)
 
-(* TODO: Hoare proof rule for [assert] *)
+(* DONE: Hoare proof rule for [assert] *)
 Theorem hoare_assert: forall P (b: bexp),
   {{P /\ b}} assert b {{P}}.
 Proof.
-  (* TODO: *)
+  (* DONE: *)
   unfold hoare_triple.
   intros.
   inversion H ; subst.
@@ -389,11 +389,11 @@ Qed.
 (* EXERCISE 3.2: State and prove [hoare_assume]                      *)
 (* ================================================================= *)
 
-(* TODO: Hoare proof rule for [assume] *)
+(* DONE: Hoare proof rule for [assume] *)
 Theorem hoare_assume: forall (P:Assertion) (b:bexp),
   {{P /\ b}} assume b {{P}}.
 Proof.
-  (* TODO: *)
+  (* DONE: *)
   unfold hoare_triple.
   intros.
   inversion H; subst.
@@ -406,13 +406,13 @@ Qed.
 (* EXERCISE 3.3: State and prove [hoare_choice]                      *)
 (* ================================================================= *)
 
-(*TODO: Hoare proof rule for [c1 !! c2] *)
+(* DONE: Hoare proof rule for [c1 !! c2] *)
 Theorem hoare_choice' : forall P c1 c2 Q,
   {{P}} c1 {{Q}} ->
   {{P}} c2 {{Q}} ->
   {{P}} c1 !! c2 {{Q}}.
 Proof.
-  (* TODO *)
+  (* DONE: *)
   unfold hoare_triple.
   intros.
   inversion H1; subst.
@@ -438,15 +438,15 @@ Example hoare_choice_example:
   X := X + 1 !! X := X + 2
   {{ X = 2 \/ X = 3 }}.
 Proof.
-  (* TODO: *)
+  (* DONE: *)
   apply hoare_choice'.
   - eapply hoare_consequence_pre.
-    + apply hoare_asgn.
-    + unfold "->>". intros st H. simpl. left.
+    -- apply hoare_asgn.
+    -- unfold "->>". intros st H. simpl. left.
       rewrite t_update_eq. simpl. simpl in H. rewrite H. reflexivity.
   - eapply hoare_consequence_pre.
-    + apply hoare_asgn.
-    + unfold "->>". intros st H. simpl. right.
+    -- apply hoare_asgn.
+    -- unfold "->>". intros st H. simpl. right.
       rewrite t_update_eq. simpl. simpl in H. rewrite H. reflexivity.
 Qed.
 
@@ -485,7 +485,7 @@ Inductive cstep : (com * result)  -> (com * result) -> Prop :=
           <{while b do c1 end}> / st 
       --> <{ if b then (c1; while b do c1 end) else skip end }> / st
 
-  (* TODO *)
+  (* DONE: *)
   | CS_AssertStep : forall st b b',
       b / st -->b b' ->
       <{ assert b }> / RNormal st --> <{ assert b' }> / RNormal st 
@@ -562,6 +562,7 @@ Example prog1_example1:
        prog1 / RNormal (X !-> 1) -->* <{ skip }> / RNormal st'
     /\ st' X = 2.
 Proof.
+  (* DONE: *)
   eexists. split.
   unfold prog1.
 
@@ -593,7 +594,7 @@ Lemma one_step_aeval_a: forall st a a',
   a / st -->a a' ->
   aeval st a = aeval st a'.
 Proof.
-  (* TODO:(Hint: you can prove this by induction on a) *)
+  (* DONE:(Hint: you can prove this by induction on a) *)
   intros.
   induction H; simpl; try reflexivity; rewrite IHastep; reflexivity.
 Qed.
@@ -750,8 +751,8 @@ Notation "{{ P }} d"
       (in custom com at level 91, P constr) : dcom_scope.
 
 
-(* TODO: notation for the three new constructs *)
-(* NOT SURE ABOUT THE LEVELS AND STUFF!!!!! *)
+(* DONE: notation for the three new constructs *)
+(* TODO: NOT SURE ABOUT THE LEVELS AND STUFF!!!!! *)
 Notation "'assert' l {{ P }}"
       := (DCAssert l P)
       (in custom com at level 90, l constr, P constr) : dcom_scope.
@@ -797,7 +798,7 @@ Fixpoint extract (d : dcom) : com :=
   | DCWhile b _ d _    => CWhile b (extract d)
   | DCPre _ d          => extract d
   | DCPost d _         => extract d
-  (* TODO: *)
+  (* DONE: *)
   | DCAssert b _      => CAssert b
   | DCAssume b _      => CAssume b
   | DCNonDetChoice d1 d2 => CNonDetChoice (extract d1) (extract d2)
@@ -833,7 +834,7 @@ Fixpoint post (d : dcom) : Assertion :=
   | DCWhile _ _ _ Q         => Q
   | DCPre _ d               => post d
   | DCPost _ Q              => Q
-  (* TODO: *)
+  (* DONE: *)
   | DCAssert _ Q           => Q
   | DCAssume _ Q           => Q
   | DCNonDetChoice d1 d2   => post d1 \/ post d2
