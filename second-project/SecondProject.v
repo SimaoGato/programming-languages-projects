@@ -439,15 +439,15 @@ Example hoare_choice_example:
   {{ X = 2 \/ X = 3 }}.
 Proof.
   (* DONE: *)
-  apply hoare_choice'.
+  apply hoare_choice'; simpl.
   - eapply hoare_consequence_pre.
     -- apply hoare_asgn.
     -- unfold "->>". intros st H. simpl. left.
-      rewrite t_update_eq. simpl. simpl in H. rewrite H. reflexivity.
+      rewrite t_update_eq. simpl. rewrite H. reflexivity.
   - eapply hoare_consequence_pre.
     -- apply hoare_asgn.
     -- unfold "->>". intros st H. simpl. right.
-      rewrite t_update_eq. simpl. simpl in H. rewrite H. reflexivity.
+      rewrite t_update_eq. simpl. rewrite H. reflexivity.
 Qed.
 
 
@@ -596,7 +596,7 @@ Lemma one_step_aeval_a: forall st a a',
 Proof.
   (* DONE:(Hint: you can prove this by induction on a) *)
   intros.
-  induction H; simpl; try reflexivity; rewrite IHastep; reflexivity.
+  induction H; simpl; try reflexivity; try rewrite IHastep; try reflexivity.
 Qed.
 
 
@@ -1005,7 +1005,14 @@ Fixpoint verification_conditions (P : Assertion) (d : dcom) : Prop :=
   | DCPost d Q =>
       verification_conditions P d
       /\ (post d ->> Q)
-  (* TODO *)
+  (* TODO: *)
+  | DCAssert b Q =>
+    (* TODO: *)
+  | DCAssume b Q =>
+      (* TODO: *)  
+  | DCNonDetChoice d1 d2 =>
+      verification_conditions P d1
+      /\ verification_conditions P d2
   end.
 
 (** The key theorem states that [verification_conditions] does its job
