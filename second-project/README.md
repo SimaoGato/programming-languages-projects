@@ -13,8 +13,8 @@
     - [x] Exercise 3.4 (Example hoare_choice_example)
 - [x] Exercise 4 (1.5 points)
     - [x] Define cstep
-- [ ] Exercise 5 (1 point)
-    - [ ] Example prog1_example1
+- [x] Exercise 5 (1 point)
+    - [x] Example prog1_example1
 - [x] Exercise 6 (1 point)
     - [x] Lemma one_step_aeval_a
 - [x] Exercise 7 (1 point)
