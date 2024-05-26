@@ -431,7 +431,8 @@ Qed.
 (* ================================================================= *)
 
 (*
-  TODO: Add a comment explaining what the example is demonstrating.
+  DONE: Here we're demonstrating that when X = 1 and after non-deterministically
+  choosing to increment it by one or two, the value of X will either be 2 or 3.
 *)
 Example hoare_choice_example:
   {{ X = 1 }}
