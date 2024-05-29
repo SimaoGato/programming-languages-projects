@@ -440,12 +440,10 @@ Example hoare_choice_example:
   {{ X = 2 \/ X = 3 }}.
 Proof.
   (* DONE: *)
-  apply hoare_choice'; simpl.
-  - eapply hoare_consequence_pre.
+  apply hoare_choice'; simpl; eapply hoare_consequence_pre.
     -- apply hoare_asgn.
     -- unfold "->>". intros st H. simpl. left.
       rewrite t_update_eq. simpl. rewrite H. reflexivity.
-  - eapply hoare_consequence_pre.
     -- apply hoare_asgn.
     -- unfold "->>". intros st H. simpl. right.
       rewrite t_update_eq. simpl. rewrite H. reflexivity.
@@ -1006,11 +1004,10 @@ Fixpoint verification_conditions (P : Assertion) (d : dcom) : Prop :=
   | DCPost d Q =>
       verification_conditions P d
       /\ (post d ->> Q)
-  (* TODO: *)
   | DCAssert b Q =>
-    (* TODO: *)
+      (P ->> (Q /\ b))%assertion
   | DCAssume b Q =>
-      (* TODO: *)  
+      (P ->> (Q /\ b))%assertion
   | DCNonDetChoice d1 d2 =>
       verification_conditions P d1
       /\ verification_conditions P d2
@@ -1061,6 +1058,17 @@ Proof.
     destruct H as [Hd HQ].
     eapply hoare_consequence_post; eauto.
   (* TODO *)
+  - (* Assert *)
+    eapply hoare_consequence_pre.
+      + apply hoare_assert.
+      + assumption. 
+  - (* Assume *)
+    eapply hoare_consequence_pre.
+      + apply hoare_assume.
+      + assumption.
+  - (* NonDetChoice *)
+    destruct H as [H1 H2].
+    apply hoare_choice'; eauto.
 Qed.
 
 
