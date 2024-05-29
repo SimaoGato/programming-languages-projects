@@ -391,15 +391,14 @@ Qed.
 
 (* DONE: Hoare proof rule for [assume] *)
 Theorem hoare_assume: forall (P:Assertion) (b:bexp),
-  {{P /\ b}} assume b {{P}}.
+  {{b -> P}} assume b {{P}}.
 Proof.
   (* DONE: *)
   unfold hoare_triple.
   intros.
   inversion H; subst.
   exists st. split; try reflexivity.
-  destruct H0.
-  apply H0.
+  simpl in H0. apply H0 in H2. apply H2.
 Qed.
 
 (* ================================================================= *)
@@ -1065,10 +1064,10 @@ Proof.
   - (* Assume *)
     eapply hoare_consequence_pre.
       + apply hoare_assume.
-      + assumption.
+      + unfold "->>". intros. apply H. apply H0.
   - (* NonDetChoice *)
     destruct H as [H1 H2].
-    apply hoare_choice'; eauto.
+    apply hoare_choice'; eapply hoare_consequence_post; eauto.
 Qed.
 
 
