@@ -1273,23 +1273,23 @@ Proof. verify. Qed.
 (* TODO: fill in the assertions *)
 Definition sqrt_dec (m:nat) : decorated :=
   <{
-    {{ FILL_IN_HERE }} ->>
-    {{ FILL_IN_HERE }}
+    {{ X=m }} ->>
+    {{ X=m }}
       Z := 0
-                    {{ FILL_IN_HERE }};
+                    {{ X=m /\ Z*Z <= m }};
       while ((Z+1)*(Z+1) <= X) do
-                    {{ FILL_IN_HERE  }} ->>
-                    {{ FILL_IN_HERE }}
+                    {{ X=m /\ Z*Z<=m /\ (Z+1)*(Z+1)<=X  }} ->>
+                    {{ X=m /\ (Z+1)*(Z+1)<=m }}
         Z := Z + 1
-                    {{ FILL_IN_HERE }}
+                    {{ X=m /\ Z*Z<=m }}
       end
-    {{ FILL_IN_HERE }} ->>
-    {{ FILL_IN_HERE }}
+    {{ X=m /\ Z*Z<=m /\ ~((Z+1)*(Z+1)<=X) }} ->>
+    {{ Z*Z<=m /\ m<(Z+1)*(Z+1) }}
   }>.
 
 Theorem sqrt_correct : forall m,
   outer_triple_valid (sqrt_dec m).
-Proof. (* TODO *) Admitted.
+Proof. verify. Qed.
 
 
 
