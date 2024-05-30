@@ -23,13 +23,13 @@
 - [x] Exercise 8 (1 point)
     - [x] Define extract
     - [x] Define post
-- [ ] Exercise 9 (2 points)
-    - [ ] Define verification_conditions
-- [ ] Exercise 10 (2 points)
-    - [ ] Theorem verification_correct
-- [ ] Exercise 11 (0.5 points)
-    - [ ] Fill in sqrt_dec
-    - [ ] Theorem sqrt_correct
-- [ ] Exercise 12 (3 points)
-    - [ ] Definition parity_dec_nondet 
-    - [ ] Theorem parity_outer_triple_valid_nondet
+- [x] Exercise 9 (2 points)
+    - [x] Define verification_conditions
+- [x] Exercise 10 (2 points)
+    - [x] Theorem verification_correct
+- [x] Exercise 11 (0.5 points)
+    - [x] Fill in sqrt_dec
+    - [x] Theorem sqrt_correct
+- [x] Exercise 12 (3 points)
+    - [x] Definition parity_dec_nondet 
+    - [x] Theorem parity_outer_triple_valid_nondet

@@ -1003,6 +1003,7 @@ Fixpoint verification_conditions (P : Assertion) (d : dcom) : Prop :=
   | DCPost d Q =>
       verification_conditions P d
       /\ (post d ->> Q)
+  (* DONE: *)
   | DCAssert b Q =>
       (P ->> (Q /\ b))%assertion
   | DCAssume b Q =>
@@ -1056,7 +1057,7 @@ Proof.
   - (* Post *)
     destruct H as [Hd HQ].
     eapply hoare_consequence_post; eauto.
-  (* TODO *)
+  (* DONE: *)
   - (* Assert *)
     eapply hoare_consequence_pre.
       + apply hoare_assert.
@@ -1270,7 +1271,7 @@ Proof. verify. Qed.
     Hint: The loop invariant here must ensure that Z*Z is consistently
     less than or equal to X. *)
 
-(* TODO: fill in the assertions *)
+(* DONE: fill in the assertions *)
 Definition sqrt_dec (m:nat) : decorated :=
   <{
     {{ X=m }} ->>
@@ -1352,25 +1353,71 @@ Qed.
 
 
 Definition parity_dec_nondet (m:nat) : decorated :=
-(* TODO: write a decorated version of the program shown above. The pre and post-conditions
+(* DONE: write a decorated version of the program shown above. The pre and post-conditions
 should not be changed. Note that the code below does
 not typecheck until you decorate it correctly. *)
 <{
-  {{ X = m }}
+  {{ X = m }}->>
+  {{ ap parity X = parity m }}
     while 2 <= X do
+    {{ ap parity X = parity m /\ 2 <= X }} ->>
+    {{ ap parity (X-2) = parity m }}
       X := X - 2
-      !! 
+      {{ ap parity X = parity m }}
+      !!
       X := X + 2
+      {{ ap parity X = parity m }}
     end
+  {{ ap parity X = parity m /\ ~(2 <= X) }} ->>
   {{ X = parity m }} }>.
 
 
 Theorem parity_outer_triple_valid_nondet : forall m,
   outer_triple_valid (parity_dec_nondet m).
 Proof. 
-  (* TODO *)
+  verify.
+  - destruct (st X) eqn:Heq.
+    -- simpl. discriminate.
+    -- simpl. destruct n.
+       --- discriminate.
+       --- destruct n.
+           ---- reflexivity.
+           ---- lia.
+  - destruct (st X) eqn:Heq.
+    -- simpl. try rewrite <- Heq. lia.
+    -- simpl. destruct n.
+       --- lia.
+       --- destruct n.
+         ---- lia.
+         ---- lia.
+  - destruct (st X) eqn:Heq.
+    -- simpl. try rewrite <- Heq. lia.
+    -- simpl. destruct n.
+       --- lia.
+       --- destruct n.
+         ---- simpl. assumption.
+         ---- simpl. destruct n.
+           ----- assumption.
+           ----- assumption.
+  - destruct (st X) eqn:Heq.
+    -- simpl. try rewrite <- Heq. lia.
+    -- simpl. destruct n.
+      --- lia.
+      --- destruct n.
+        ---- simpl. assumption.
+        ---- destruct n.
+          ----- simpl. assumption.
+          ----- simpl. simpl in H. rewrite <- H. apply parity_plus_2.
+  - destruct (st X) eqn:Heq.
+    -- simpl. try rewrite <- Heq. rewrite Heq. simpl in H. apply H.
+    -- simpl. destruct n.
+      --- simpl in H. apply H.
+      --- destruct n.
+       ---- simpl. simpl in H. rewrite <- H. lia.
+        ---- destruct n.
+          ----- simpl. rewrite <- H. lia.
+          ----- simpl. simpl in H. rewrite <- H. lia.
 Qed.
-
 
 End DCom.
 
