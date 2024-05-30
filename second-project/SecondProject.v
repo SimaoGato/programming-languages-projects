@@ -1375,48 +1375,33 @@ not typecheck until you decorate it correctly. *)
 Theorem parity_outer_triple_valid_nondet : forall m,
   outer_triple_valid (parity_dec_nondet m).
 Proof. 
-  verify.
-  - destruct (st X) eqn:Heq.
-    -- simpl. discriminate.
-    -- simpl. destruct n.
-       --- discriminate.
+  verify; destruct (st X) eqn:Heq; simpl in *.
+  - discriminate.
+  - destruct n.
+    -- discriminate.
+    -- destruct n.
+       --- reflexivity.
+       --- lia. 
+  - try rewrite <- Heq. lia.
+  - destruct n.
+    -- lia.
+    -- destruct n; lia.
+  - try rewrite <- Heq. lia.
+  - destruct n.
+    -- lia.
+    -- destruct n; try assumption.
+  - try rewrite <- Heq. lia.
+  - destruct n.
+    -- lia.
+    -- destruct n.
+       --- simpl. assumption.
        --- destruct n.
-           ---- reflexivity.
-           ---- lia.
-  - destruct (st X) eqn:Heq.
-    -- simpl. try rewrite <- Heq. lia.
-    -- simpl. destruct n.
-       --- lia.
-       --- destruct n.
-         ---- lia.
-         ---- lia.
-  - destruct (st X) eqn:Heq.
-    -- simpl. try rewrite <- Heq. lia.
-    -- simpl. destruct n.
-       --- lia.
-       --- destruct n.
-         ---- simpl. assumption.
-         ---- simpl. destruct n.
-           ----- assumption.
-           ----- assumption.
-  - destruct (st X) eqn:Heq.
-    -- simpl. try rewrite <- Heq. lia.
-    -- simpl. destruct n.
-      --- lia.
-      --- destruct n.
-        ---- simpl. assumption.
-        ---- destruct n.
-          ----- simpl. assumption.
-          ----- simpl. simpl in H. rewrite <- H. apply parity_plus_2.
-  - destruct (st X) eqn:Heq.
-    -- simpl. try rewrite <- Heq. rewrite Heq. simpl in H. apply H.
-    -- simpl. destruct n.
-      --- simpl in H. apply H.
-      --- destruct n.
-       ---- simpl. simpl in H. rewrite <- H. lia.
-        ---- destruct n.
-          ----- simpl. rewrite <- H. lia.
-          ----- simpl. simpl in H. rewrite <- H. lia.
+           ---- assumption.
+           ---- simpl. simpl in H. rewrite <- H. apply parity_plus_2.
+  - try rewrite <- Heq. rewrite Heq.  apply H.
+  - destruct n.
+    -- simpl in H. apply H.
+    -- destruct n; rewrite <- H; simpl; lia.
 Qed.
 
 End DCom.
