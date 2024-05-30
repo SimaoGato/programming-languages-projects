@@ -1375,33 +1375,28 @@ not typecheck until you decorate it correctly. *)
 Theorem parity_outer_triple_valid_nondet : forall m,
   outer_triple_valid (parity_dec_nondet m).
 Proof. 
-  verify; destruct (st X) eqn:Heq; simpl in *.
+  verify; destruct (st X) eqn:Heq; simpl in *; try destruct n; simpl in *.
+  - discriminate.
   - discriminate.
   - destruct n.
-    -- discriminate.
+    -- reflexivity.
+    -- lia. 
+  - try rewrite <- Heq. lia.
+  - lia.
+  - destruct n; lia.
+  - try rewrite <- Heq. lia.
+  - lia.
+  - destruct n; try assumption.
+  - try rewrite <- Heq. lia.
+  - lia.
+  - destruct n.
+    -- simpl. assumption.
     -- destruct n.
-       --- reflexivity.
-       --- lia. 
-  - try rewrite <- Heq. lia.
-  - destruct n.
-    -- lia.
-    -- destruct n; lia.
-  - try rewrite <- Heq. lia.
-  - destruct n.
-    -- lia.
-    -- destruct n; try assumption.
-  - try rewrite <- Heq. lia.
-  - destruct n.
-    -- lia.
-    -- destruct n.
-       --- simpl. assumption.
-       --- destruct n.
-           ---- assumption.
-           ---- simpl. simpl in H. rewrite <- H. apply parity_plus_2.
+       --- assumption.
+       --- simpl. simpl in H. rewrite <- H. apply parity_plus_2.
   - try rewrite <- Heq. rewrite Heq.  apply H.
-  - destruct n.
-    -- simpl in H. apply H.
-    -- destruct n; rewrite <- H; simpl; lia.
+  - apply H.
+  - destruct n; rewrite <- H; simpl; lia.
 Qed.
 
 End DCom.
