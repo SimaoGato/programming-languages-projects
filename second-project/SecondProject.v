@@ -380,8 +380,7 @@ Proof.
   intros.
   inversion H ; subst.
   - exists st. split; try reflexivity.
-    destruct H0.
-    apply H0.
+    destruct H0. apply H0.
   - destruct H0. rewrite H1 in H2. discriminate H2.
 Qed.
 
@@ -414,13 +413,9 @@ Proof.
   (* DONE: *)
   unfold hoare_triple.
   intros.
-  inversion H1; subst.
-  - apply H with (st := st).
-    -- apply H7.
-    -- apply H2.
-  - apply H0 with (st := st).
-    -- apply H7.
-    -- apply H2.
+  inversion H1; subst;
+  try (apply H with (st := st); assumption);
+  try (apply H0 with (st := st); assumption).
 Qed.
 
 (* ================================================================= *)
@@ -429,23 +424,26 @@ Qed.
 (*               words what this example is demonstrating.           *)                                            
 (* ================================================================= *)
 
+(* Define new tatic for:
+  rewrite t_update_eq. simpl. rewrite H. reflexivity.
+*)
+Ltac rewrite_update_eq H :=
+  rewrite t_update_eq; simpl; rewrite H; reflexivity.
+
 (*
   DONE: Here we're demonstrating that when X = 1 and after non-deterministically
   choosing to increment it by one or two, the value of X will either be 2 or 3.
-*)
+ *)
 Example hoare_choice_example:
   {{ X = 1 }}
   X := X + 1 !! X := X + 2
   {{ X = 2 \/ X = 3 }}.
 Proof.
   (* DONE: *)
-  apply hoare_choice'; simpl; eapply hoare_consequence_pre.
-    -- apply hoare_asgn.
-    -- unfold "->>". intros st H. simpl. left.
-      rewrite t_update_eq. simpl. rewrite H. reflexivity.
-    -- apply hoare_asgn.
-    -- unfold "->>". intros st H. simpl. right.
-      rewrite t_update_eq. simpl. rewrite H. reflexivity.
+  apply hoare_choice'; simpl; eapply hoare_consequence_pre;
+  try apply hoare_asgn; unfold "->>"; intros st H.
+  - left. rewrite_update_eq H. 
+  - right. rewrite_update_eq H. 
 Qed.
 
 
@@ -750,7 +748,6 @@ Notation "{{ P }} d"
 
 
 (* DONE: notation for the three new constructs *)
-(* TODO: NOT SURE ABOUT THE LEVELS AND STUFF!!!!! *)
 Notation "'assert' l {{ P }}"
       := (DCAssert l P)
       (in custom com at level 90, l constr, P constr) : dcom_scope.
@@ -1368,35 +1365,18 @@ not typecheck until you decorate it correctly. *)
       X := X + 2
       {{ ap parity X = parity m }}
     end
-  {{ ap parity X = parity m /\ ~(2 <= X) }} ->>
-  {{ X = parity m }} }>.
+    {{ ap parity X = parity m /\ ~(2 <= X) }} ->>
+    {{ X = parity m }} }>.
 
 
 Theorem parity_outer_triple_valid_nondet : forall m,
   outer_triple_valid (parity_dec_nondet m).
 Proof. 
-  verify; destruct (st X) eqn:Heq; simpl in *; try destruct n; simpl in *.
-  - discriminate.
-  - discriminate.
-  - destruct n.
-    -- reflexivity.
-    -- lia. 
-  - try rewrite <- Heq. lia.
-  - lia.
-  - destruct n; lia.
-  - try rewrite <- Heq. lia.
-  - lia.
-  - destruct n; try assumption.
-  - try rewrite <- Heq. lia.
-  - lia.
-  - destruct n.
-    -- simpl. assumption.
-    -- destruct n.
-       --- assumption.
-       --- simpl. simpl in H. rewrite <- H. apply parity_plus_2.
-  - try rewrite <- Heq. rewrite Heq.  apply H.
-  - apply H.
-  - destruct n; rewrite <- H; simpl; lia.
+  verify; destruct (st X) eqn:Heq; simpl in *;
+  try destruct n; simpl in *; try discriminate;
+  try lia; destruct n; simpl in *; try lia.
+  - destruct n; simpl in  *; try lia.
+    -- rewrite <- H. apply parity_plus_2.
 Qed.
 
 End DCom.
